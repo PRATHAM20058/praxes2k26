@@ -1,0 +1,93 @@
+.registration-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.text-center { text-align: center; }
+.mb-4 { margin-bottom: 2rem; }
+.mt-4 { margin-top: 2rem; }
+
+/* Progress Indicator */
+.progress-wrapper {
+  margin-bottom: 3rem;
+  position: relative;
+  padding: 0 1rem;
+}
+
+.progress-bar-bg {
+  position: absolute;
+  top: 50%;
+  left: 2rem;
+  right: 2rem;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-gold);
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px var(--accent-gold-glow);
+}
+
+.progress-steps {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.progress-step.active {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: var(--bg-dark);
+  box-shadow: 0 0 15px var(--accent-gold-glow);
+}
+
+.progress-step.current {
+  background: var(--bg-card);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 15px var(--accent-gold-glow);
+}
+
+.form-card {
+  padding: 2.5rem;
+  animation: fadeIn 0.4s ease;
+}
+
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 1.5rem;
+  }
+}
