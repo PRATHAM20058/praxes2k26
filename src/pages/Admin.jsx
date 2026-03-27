@@ -98,8 +98,8 @@ const Admin = () => {
               <input type="number" className="form-input" value={newEvent.fee} onChange={(e) => setNewEvent({...newEvent, fee: e.target.value})} required />
             </div>
             <div className="form-group">
-              <label className="form-label">Team Limit</label>
-              <input type="text" className="form-input" placeholder="e.g. Solo or 4 Members" value={newEvent.limit} onChange={(e) => setNewEvent({...newEvent, limit: e.target.value})} required />
+              <label className="form-label">Team Limit (Number of participants)</label>
+              <input type="number" min="1" max="10" className="form-input" placeholder="e.g. 1 for Solo, 4 for Squad" value={newEvent.limit} onChange={(e) => setNewEvent({...newEvent, limit: e.target.value})} required />
             </div>
             <div className="form-group">
               <label className="form-label">Description</label>

@@ -40,9 +40,18 @@ const Step2BasicInfo = ({ nextStep, prevStep, data, updateFormData }) => {
   const handleEventChange = (e) => {
     const eventId = e.target.value;
     const selected = eventsList.find(ev => ev.id === eventId);
+    
+    let limit = 1;
+    if (selected && selected.limit) {
+      const parsed = parseInt(selected.limit, 10);
+      if (!isNaN(parsed) && parsed > 0) limit = parsed;
+    }
+
     updateFormData({
       selectedEvent: eventId,
-      eventFee: selected ? selected.fee : 0
+      eventFee: selected ? selected.fee : 0,
+      teamLimit: limit,
+      participants: Array.from({ length: limit }, (_, i) => data.participants && data.participants[i] ? data.participants[i] : { fullName: '', department: '', semester: '', enrollmentNo: '', contactNo: '', emailId: '' })
     });
   };
 

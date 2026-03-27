@@ -14,7 +14,7 @@ const TicketScreen = ({ data }) => {
       return Math.random() * (max - min) + min;
     }
 
-    var interval = setInterval(function() {
+    var interval = setInterval(function () {
       var timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
@@ -25,18 +25,18 @@ const TicketScreen = ({ data }) => {
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
     }, 250);
-    
+
     return () => clearInterval(interval);
   }, []);
 
   const handleDownload = () => {
     const element = document.getElementById('ticket-content');
     const opt = {
-      margin:       0.5,
-      filename:     `${data.ticketId}-Ticket.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#120505' },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      margin: 0.5,
+      filename: `${data.ticketId}-Ticket.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#120505' },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save();
@@ -49,8 +49,8 @@ const TicketScreen = ({ data }) => {
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>A confirmation email will be sent within 48 hours.</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-        <div 
-          id="ticket-content" 
+        <div
+          id="ticket-content"
           style={{
             background: 'linear-gradient(135deg, #220b0b 0%, #120505 100%)',
             border: '2px solid var(--accent-gold)',
@@ -104,15 +104,24 @@ const TicketScreen = ({ data }) => {
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
-            <h3 style={{ color: 'var(--text-primary)', marginBottom: '1rem', borderBottom: '1px solid #4a2828', paddingBottom: '0.5rem' }}>Participant Info</h3>
-            <p style={{ marginBottom: '0.5rem' }}><strong>Name:</strong> {data.fullName}</p>
+            <h3 style={{ color: 'var(--text-primary)', marginBottom: '1rem', borderBottom: '1px solid #4a2828', paddingBottom: '0.5rem' }}>
+              Participant Info {data.teamLimit > 1 ? '(Team Leader)' : ''}
+            </h3>
+            <p style={{ marginBottom: '0.5rem' }}><strong>Name:</strong> {data.participants && data.participants[0] ? data.participants[0].fullName : data.fullName}</p>
             <p style={{ marginBottom: '0.5rem' }}><strong>College:</strong> {data.collegeName}</p>
-            <p style={{ marginBottom: '0.5rem' }}><strong>Dept & Sem:</strong> {data.department} ({data.semester} Sem)</p>
-            <p><strong>Contact:</strong> {data.contactNo}</p>
+            <p style={{ marginBottom: '0.5rem' }}><strong>Dept & Year:</strong> {data.participants && data.participants[0] ? data.participants[0].department : data.department} ({data.participants && data.participants[0] ? data.participants[0].semester : data.semester} Year)</p>
+            <p style={{ marginBottom: '0.5rem' }}><strong>Contact:</strong> {data.participants && data.participants[0] ? data.participants[0].contactNo : data.contactNo}</p>
+            {data.collegeName !== 'Government Engineering College, Palanpur' && data.transactionId && (
+              <p style={{ color: 'var(--accent-emerald)', marginTop: '0.5rem' }}><strong>Transaction ID:</strong> {data.transactionId}</p>
+            )}
           </div>
 
-          <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            <p>Please present this ticket at the registration desk.</p>
+          <div style={{ marginTop: '1.5rem', background: 'rgba(212, 175, 55, 0.1)', borderLeft: '4px solid var(--accent-gold)', padding: '1rem', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--text-primary)', textAlign: 'left' }}>
+            <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--accent-gold)' }}>Important Instructions:</p>
+            <ol style={{ paddingLeft: '1.2rem', margin: 0 }}>
+              <li style={{ marginBottom: '0.25rem' }}>This ticket is not valid until it is <span className="glow-text-emerald" style={{ fontWeight: 'bold' }}>stamped by the registration committee</span>.</li>
+              <li>Please verify your ticket at the registration desk.</li>
+            </ol>
           </div>
         </div>
       </div>

@@ -17,16 +17,14 @@ const Registration = () => {
     eventFee: 0,
     teamLimit: 1,
     teamName: '',
-    fullName: '',
-    department: '',
-    semester: '',
-    enrollmentNo: '',
-    contactNo: '',
-    emailId: '',
+    participants: [{ fullName: '', department: '', semester: '', enrollmentNo: '', contactNo: '', emailId: '' }],
     paymentUpiId: '',
     transactionId: '',
     ticketId: ''
   });
+
+  const isGEC = formData.collegeName === 'Government Engineering College, Palanpur';
+  const totalSteps = isGEC ? 4 : 5;
 
   const generateTicketId = () => {
     return 'PRAXES-' + Math.floor(1000 + Math.random() * 9000);
@@ -36,13 +34,24 @@ const Registration = () => {
     setFormData(prev => ({ ...prev, ...fields }));
   };
 
-  const nextStep = () => setStep(prev => Math.min(prev + 1, 5));
+  const nextStep = () => setStep(prev => Math.min(prev + 1, totalSteps));
   const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
-  const submitForm = async () => {
+  const submitForm = async (additionalData = {}) => {
     const ticketId = generateTicketId();
-    updateFormData({ ticketId });
     
-    const payload = { ...formData, ticketId };
+    // Flatten participants for webhook and Ticket screen
+    const flatData = {
+      fullName: formData.participants.map(p => p.fullName).join(' | '),
+      department: formData.participants.map(p => p.department).join(' | '),
+      semester: formData.participants.map(p => p.semester).join(' | '),
+      enrollmentNo: formData.participants.map(p => p.enrollmentNo).join(' | '),
+      contactNo: formData.participants.map(p => p.contactNo).join(' | '),
+      emailId: formData.participants.map(p => p.emailId).join(' | ')
+    };
+    
+    const finalData = { ...formData, ...additionalData };
+    updateFormData({ ticketId, ...flatData, ...additionalData });
+    const payload = { ...finalData, ...flatData, ticketId };
     
     if (GOOGLE_SHEET_WEBHOOK_URL && GOOGLE_SHEET_WEBHOOK_URL.startsWith('http')) {
       try {
@@ -78,7 +87,7 @@ const Registration = () => {
       case 3:
         return <Step3ParticipantDetails nextStep={nextStep} prevStep={prevStep} data={formData} updateFormData={updateFormData} />;
       case 4:
-        return <Step4Instructions nextStep={nextStep} prevStep={prevStep} />;
+        return <Step4Instructions nextStep={nextStep} prevStep={prevStep} data={formData} updateFormData={updateFormData} submitForm={submitForm} />;
       case 5:
         return <Step5Payment submitForm={submitForm} prevStep={prevStep} data={formData} updateFormData={updateFormData} />;
       default:
@@ -86,7 +95,8 @@ const Registration = () => {
     }
   };
 
-  const progressPercentage = ((step - 1) / 4) * 100;
+  const progressPercentage = ((step - 1) / (totalSteps - 1)) * 100;
+  const stepArray = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
   return (
     <div className="registration-container container">
@@ -101,7 +111,7 @@ const Registration = () => {
           ></div>
         </div>
         <div className="progress-steps">
-          {[1, 2, 3, 4, 5].map(s => (
+          {stepArray.map(s => (
             <div key={s} className={`progress-step ${step > s ? 'active' : ''} ${step === s ? 'current' : ''}`}>
               {s}
             </div>

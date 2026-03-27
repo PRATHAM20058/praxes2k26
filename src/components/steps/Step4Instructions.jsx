@@ -1,52 +1,95 @@
-import React from 'react';
-import { Info, Phone } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldAlert, CheckCircle } from 'lucide-react';
 
-const Step4Instructions = ({ nextStep, prevStep }) => {
+const Step4Instructions = ({ nextStep, prevStep, data, updateFormData, submitForm }) => {
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isGEC = data.collegeName === 'Government Engineering College, Palanpur';
+
+  const handleAction = async () => {
+    if (!isConfirmed) {
+      setError('You must confirm that you have read the instructions.');
+      return;
+    }
+    
+    setError('');
+
+    if (isGEC) {
+      // GEC Submits here
+      setIsSubmitting(true);
+      await submitForm({ paymentUpiId: 'OFFLINE_GEC', transactionId: 'OFFLINE_GEC' });
+      setIsSubmitting(false);
+    } else {
+      // Non-GEC proceeds to Payment (Step 5)
+      nextStep();
+    }
+  };
+
   return (
     <div className="step-container">
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <Info size={64} className="glow-text-emerald" style={{ margin: '0 auto' }} />
-        <h2 className="glow-text-gold mt-4 mb-4">Step 4: Instructions & Support</h2>
+        <ShieldAlert size={64} className="glow-text-gold" style={{ margin: '0 auto' }} />
+        <h2 className="glow-text-gold mt-4 mb-2">Step 4: Instruction & Support</h2>
       </div>
 
-      <div className="instructions-card" style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem', borderLeft: '4px solid var(--accent-gold)' }}>
-        <h3 className="glow-text-gold mb-4" style={{ marginBottom: '1rem' }}>Important Instructions</h3>
-        <ul style={{ paddingLeft: '1.5rem', lineHeight: '1.8', color: 'var(--text-primary)' }}>
-          <li>Please ensure all entered details are accurate. Certificates will be generated based on this data.</li>
-          <li>For team events, only the team leader needs to register and submit the payment.</li>
-          <li>Payments are accepted via UPI only (Google Pay / PhonePe / Paytm).</li>
-          <li><strong>Take a screenshot of the successful payment displaying the UTR/Transaction ID clearly.</strong></li>
-          <li>Registration is confirmed only after the payment is verified by our team.</li>
-          <li>Registration fees are non-refundable under any circumstances.</li>
+      <div className="payment-card" style={{ background: 'rgba(0,0,0,0.3)', padding: '2.5rem 2rem', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.3)', marginBottom: '2rem' }}>
+        <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)', textAlign: 'center', fontSize: '1.5rem' }}>Government Engineering College, Palanpur Support</h3>
+        <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', paddingLeft: '1.5rem', textAlign: 'left', margin: '0 auto', maxWidth: '600px', fontSize: '1.1rem' }}>
+          {isGEC ? (
+             <li style={{ marginBottom: '0.75rem' }}>You must have your ticket verified by the registration team after making the offline payment at the venue.</li>
+          ) : (
+             <li style={{ marginBottom: '0.75rem' }}>Online payment via UPI is required on the next step. Ensure you keep the Transaction ID handy.</li>
+          )}
+          <li style={{ marginBottom: '0.75rem' }}>The ticket is valid only if it has been verified by the registration team.</li>
+          <li style={{ marginBottom: '0.75rem' }}><span className="glow-text-gold" style={{fontWeight: 'bold'}}>Venue:</span> GECPL College Library</li>
+          <li>
+            <span className="glow-text-gold" style={{fontWeight: 'bold'}}>For any queries, feel free to contact:</span>
+            <ul style={{ listStyleType: 'circle', paddingLeft: '1.5rem', marginTop: '0.5rem', color: 'var(--text-primary)' }}>
+              <li>Shubham Patel – 8320425345</li>
+              <li>Pratham Parmar – 9427512951</li>
+              <li>Kuldeepkumar Parmar – 9724944920</li>
+              <li>Himanshu Nai – 9875017538</li>
+              <li>Mahim Joshi – 7041997504</li>
+            </ul>
+          </li>
         </ul>
+
+        <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '0.75rem', textAlign: 'left', maxWidth: '600px', margin: '2rem auto 0 auto' }}>
+          <input 
+            type="checkbox" 
+            id="confirmInstructions" 
+            checked={isConfirmed}
+            onChange={(e) => {
+              setIsConfirmed(e.target.checked);
+              if (e.target.checked) setError('');
+            }}
+            style={{ width: '18px', height: '18px', minWidth: '18px', accentColor: 'var(--accent-emerald)', cursor: 'pointer', marginTop: '0.2rem' }}
+          />
+          <label htmlFor="confirmInstructions" style={{ color: 'var(--text-primary)', cursor: 'pointer', fontSize: '1.05rem', userSelect: 'none', lineHeight: '1.4' }}>
+            I confirm that I have read the above instructions carefully.
+          </label>
+        </div>
       </div>
 
-      <h3 className="glow-text-emerald" style={{ marginBottom: '1rem' }}>Event Coordinators</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div className="coordinator-card" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(11, 218, 81, 0.3)', padding: '1rem', borderRadius: '8px' }}>
-          <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>John Doe</h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Chief Coordinator</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-emerald)' }}>
-            <Phone size={16} />
-            <span>+91 98765 43210</span>
-          </div>
-        </div>
-        <div className="coordinator-card" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(11, 218, 81, 0.3)', padding: '1rem', borderRadius: '8px' }}>
-          <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Jane Smith</h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Technical Head</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-emerald)' }}>
-            <Phone size={16} />
-            <span>+91 87654 32109</span>
-          </div>
-        </div>
-      </div>
+      {error && <p className="form-error" style={{ textAlign: 'center', marginBottom: '1.5rem', marginTop: '-0.5rem', fontSize: '1.05rem', fontWeight: 'bold' }}>{error}</p>}
 
       <div className="form-navigation">
         <button type="button" className="btn" onClick={prevStep}>
           ← Back
         </button>
-        <button type="button" className="btn btn-primary" onClick={nextStep}>
-          Proceed to Payment →
+        <button type="button" className="btn btn-primary" onClick={handleAction} disabled={isSubmitting} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: isSubmitting ? 0.7 : 1 }}>
+          {isSubmitting ? (
+             <span>Processing...</span>
+          ) : isGEC ? (
+             <>
+                <CheckCircle size={18} />
+                Submit Registration
+             </>
+          ) : (
+             <>Next Step →</>
+          )}
         </button>
       </div>
     </div>
