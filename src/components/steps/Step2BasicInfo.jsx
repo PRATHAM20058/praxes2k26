@@ -5,6 +5,18 @@ import { getEventsList } from '../../utils/eventManager';
 const Step2BasicInfo = ({ nextStep, prevStep, data, updateFormData }) => {
   const [errors, setErrors] = useState({});
   const [eventsList, setEventsList] = useState([]);
+  const [collegeSelection, setCollegeSelection] = useState(
+    data.collegeName === 'Government Engineering College, Palanpur' ? 'GEC' : (data.collegeName ? 'OTHER' : '')
+  );
+
+  const handleRadioChange = (val) => {
+    setCollegeSelection(val);
+    if (val === 'GEC') {
+      updateFormData({ collegeName: 'Government Engineering College, Palanpur' });
+    } else {
+      updateFormData({ collegeName: '' });
+    }
+  };
 
   useEffect(() => {
     setEventsList(getEventsList());
@@ -12,7 +24,8 @@ const Step2BasicInfo = ({ nextStep, prevStep, data, updateFormData }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!data.collegeName.trim()) newErrors.collegeName = "College Name is required";
+    if (!collegeSelection) newErrors.collegeName = "Please select your college";
+    else if (collegeSelection === 'OTHER' && !data.collegeName.trim()) newErrors.collegeName = "College Name is required";
     if (!data.selectedEvent) newErrors.selectedEvent = "Please select an event";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -42,13 +55,42 @@ const Step2BasicInfo = ({ nextStep, prevStep, data, updateFormData }) => {
 
       <div className="form-group">
         <label className="form-label">College / Institute Name *</label>
-        <input 
-          type="text" 
-          className="form-input" 
-          placeholder="e.g. Government Engineering College, Palanpur"
-          value={data.collegeName}
-          onChange={(e) => updateFormData({ collegeName: e.target.value })}
-        />
+        
+        <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)', cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name="collegeType" 
+              value="GEC"
+              checked={collegeSelection === 'GEC'}
+              onChange={() => handleRadioChange('GEC')}
+              style={{ accentColor: 'var(--accent-emerald)', width: '18px', height: '18px' }}
+            />
+            Government Engineering College, Palanpur
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)', cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name="collegeType" 
+              value="OTHER"
+              checked={collegeSelection === 'OTHER'}
+              onChange={() => handleRadioChange('OTHER')}
+              style={{ accentColor: 'var(--accent-emerald)', width: '18px', height: '18px' }}
+            />
+            Other
+          </label>
+        </div>
+
+        {collegeSelection === 'OTHER' && (
+          <input 
+            type="text" 
+            className="form-input mt-2" 
+            placeholder="Enter your College / Institute Name"
+            value={data.collegeName}
+            onChange={(e) => updateFormData({ collegeName: e.target.value })}
+            autoFocus
+          />
+        )}
         {errors.collegeName && <p className="form-error">{errors.collegeName}</p>}
       </div>
 
